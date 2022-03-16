@@ -171,6 +171,7 @@ class DigiCertConnector(BaseConnector):
         url = "{0}/{1}".format(self._base_url, endpoint.strip("/"))
 
         try:
+            self.debug_print("Making rest call...")
             r = self._request_session.request(method, url, **kwargs)
         except requests.exceptions.InvalidSchema:
             error_message = 'Error connecting to server. No connection adapters were found for {}'.format(url)
@@ -188,6 +189,7 @@ class DigiCertConnector(BaseConnector):
                 ), resp_json
             )
 
+        self.debug_print("Processing response...")
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
