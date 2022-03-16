@@ -1,6 +1,6 @@
 # File: digicert_connector.py
 #
-# Copyright (c) 2021 Splunk Inc.
+# Copyright (c) 2021-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,24 +15,22 @@
 #
 #
 # Phantom App imports
+import json
+
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-from phantom.vault import Vault
 import phantom.rules as ph_rules
+import requests
+from bs4 import BeautifulSoup
+from cryptography import x509
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+from phantom.vault import Vault
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Usage of the consts file is recommended
 # Import local
 import digicert_consts as consts
-
-import requests
-import json
-from bs4 import BeautifulSoup
-
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-from cryptography import x509
 
 
 class RetVal(tuple):
@@ -486,8 +484,9 @@ class DigiCertConnector(BaseConnector):
 
 if __name__ == "__main__":
 
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
