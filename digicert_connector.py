@@ -361,6 +361,7 @@ class DigiCertConnector(BaseConnector):
             )
 
         url = "{0}/{1}".format(self._base_url, endpoint.strip("/"))
+        self.debug_print("Making rest call...")
         response = self._request_session.get(url, stream=True)
 
         if not response.ok:
