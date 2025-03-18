@@ -1,6 +1,6 @@
 # File: digicert_connector.py
 #
-# Copyright (c) 2021-2022 Splunk Inc.
+# Copyright (c) 2021-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class RetVal(tuple):
 class DigiCertConnector(BaseConnector):
     def __init__(self):
         # Call the BaseConnectors init first
-        super(DigiCertConnector, self).__init__()
+        super().__init__()
 
         self._state = None
         self._base_url = None
@@ -51,17 +51,12 @@ class DigiCertConnector(BaseConnector):
         self._request_session = None
 
     def _process_empty_response(self, response, action_result):
-
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
 
-        return RetVal(
-            action_result.set_status(phantom.APP_ERROR, "Empty response and no information in the header"),
-            None
-        )
+        return RetVal(action_result.set_status(phantom.APP_ERROR, "Empty response and no information in the header"), None)
 
     def _process_html_response(self, response, action_result):
-
         # An html response, treat it like an error
         status_code = response.status_code
 
@@ -77,40 +72,29 @@ class DigiCertConnector(BaseConnector):
         except Exception:
             error_text = "Cannot parse error details"
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
+        message = f"Status Code: {status_code}. Data from server:\n{error_text}\n"
 
         message = message.replace("{", "{{").replace("}", "}}")
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, r, action_result):
-
         # Try a json parse
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    "Unable to parse JSON response. Error: {0}".format(str(e))
-                ),
-                None
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Unable to parse JSON response. Error: {e!s}"), None)
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace("{", "{{").replace("}", "}}")
-        )
+        message = "Error from server. Status Code: {} Data from server: {}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
-
         # store the r_text in debug data, it will get dumped in the logs if the action fails
         if hasattr(action_result, "add_debug_data"):
             action_result.add_debug_data({"r_status_code": r.status_code})
@@ -135,15 +119,14 @@ class DigiCertConnector(BaseConnector):
             return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace("{", "{{").replace("}", "}}")
+        message = "Can't process response from server. Status Code: {} Data from server: {}".format(
+            r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error messages from the exception.
+        """This method is used to get appropriate error messages from the exception.
         :param e: Exception object
         :return: error message
         """
@@ -162,39 +145,34 @@ class DigiCertConnector(BaseConnector):
         except Exception:
             pass
 
-        return "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
+        return f"Error Code: {error_code}. Error Message: {error_msg}"
 
     def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
         resp_json = None
         method = method.upper()
-        url = "{0}/{1}".format(self._base_url, endpoint.strip("/"))
+        url = "{}/{}".format(self._base_url, endpoint.strip("/"))
 
         try:
             self.debug_print("Making rest call...")
             r = self._request_session.request(method, url, **kwargs)
         except requests.exceptions.InvalidSchema:
-            error_message = 'Error connecting to server. No connection adapters were found for {}'.format(url)
+            error_message = f"Error connecting to server. No connection adapters were found for {url}"
             return RetVal(action_result.set_status(phantom.APP_ERROR, error_message), resp_json)
         except requests.exceptions.InvalidURL:
-            error_message = 'Error connecting to server. Invalid URL {}'.format(url)
+            error_message = f"Error connecting to server. Invalid URL {url}"
             return RetVal(action_result.set_status(phantom.APP_ERROR, error_message), resp_json)
         except requests.exceptions.ConnectionError:
-            error_message = 'Error Details: Connection Refused from the Server {}'.format(url)
+            error_message = f"Error Details: Connection Refused from the Server {url}"
             return RetVal(action_result.set_status(phantom.APP_ERROR, error_message), resp_json)
         except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
-                ), resp_json
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {e!s}"), resp_json)
 
         self.debug_print("Processing response...")
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
-
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -214,7 +192,7 @@ class DigiCertConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_request_cert(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -242,12 +220,9 @@ class DigiCertConnector(BaseConnector):
         else:
             # 'else' on a for loop is called if it IS NOT broken (i.e. break is never called)
             # in this case that means we did not find a vault item in the list, so return an error
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                "Could not find the csr in the file vault"
-            )
+            return action_result.set_status(phantom.APP_ERROR, "Could not find the csr in the file vault")
 
-        with open(filename, "r") as fp:
+        with open(filename) as fp:
             csr_data = fp.read()
 
         # try to parse the csr
@@ -256,12 +231,9 @@ class DigiCertConnector(BaseConnector):
             parsed_signature_hash = csr_req.signature_hash_algorithm.name
             # https://cryptography.io/en/latest/x509/reference/#cryptography.x509.Name.get_attributes_for_oid
             parsed_cn = csr_req.subject.get_attributes_for_oid(x509.oid.NameOID.COMMON_NAME)[0].value
-            self.save_progress("Parsed csr values: siganture_hash={0} CN={1}".format(parsed_signature_hash, parsed_cn))
+            self.save_progress(f"Parsed csr values: siganture_hash={parsed_signature_hash} CN={parsed_cn}")
         except Exception:
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                "Failed to parse the csr, make sure it is in PEM format"
-            )
+            return action_result.set_status(phantom.APP_ERROR, "Failed to parse the csr, make sure it is in PEM format")
 
         payload = {
             "certificate": {
@@ -272,21 +244,12 @@ class DigiCertConnector(BaseConnector):
                     "id": server_platform_id,
                 },
             },
-            "organization": {
-                "id": int(self._org_id)
-            },
-            "order_validity": {
-                "years": order_validity_years
-            }
+            "organization": {"id": int(self._org_id)},
+            "order_validity": {"years": order_validity_years},
         }
 
         # submit the request
-        ret_val, response = self._make_rest_call(
-            "/order/certificate/ssl",
-            action_result,
-            method="post",
-            json=payload
-        )
+        ret_val, response = self._make_rest_call("/order/certificate/ssl", action_result, method="post", json=payload)
 
         if phantom.is_fail(ret_val):
             # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -296,18 +259,20 @@ class DigiCertConnector(BaseConnector):
         action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        action_result.update_summary({
-            "order_id": response["id"],
-            "request_id": response["requests"][0]["id"],
-            "request_status": response["requests"][0]["status"],
-            "common_name": payload["certificate"]["common_name"],
-            "signature_hash": payload["certificate"]["signature_hash"]
-        })
+        action_result.update_summary(
+            {
+                "order_id": response["id"],
+                "request_id": response["requests"][0]["id"],
+                "request_status": response["requests"][0]["status"],
+                "common_name": payload["certificate"]["common_name"],
+                "signature_hash": payload["certificate"]["signature_hash"],
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_update_request_status(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -318,13 +283,7 @@ class DigiCertConnector(BaseConnector):
 
         # make rest call, response should be empty
         ret_val, response = self._make_rest_call(
-            "/request/{0}/status".format(request_id),
-            action_result,
-            method="put",
-            json={
-                "status": status,
-                "processor_comment": processor_comment
-            }
+            f"/request/{request_id}/status", action_result, method="put", json={"status": status, "processor_comment": processor_comment}
         )
 
         if phantom.is_fail(ret_val):
@@ -333,16 +292,18 @@ class DigiCertConnector(BaseConnector):
 
         action_result.add_data(response)
 
-        action_result.update_summary({
-            "request_id": request_id,
-            "status": status,
-            "comment": processor_comment,
-        })
+        action_result.update_summary(
+            {
+                "request_id": request_id,
+                "status": status,
+                "comment": processor_comment,
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_download_cert(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -352,16 +313,13 @@ class DigiCertConnector(BaseConnector):
         order_id = param.get("order_id")
 
         if certificate_id:
-            endpoint = "/certificate/{0}/download/platform".format(certificate_id)
+            endpoint = f"/certificate/{certificate_id}/download/platform"
         elif order_id:
-            endpoint = "/certificate/download/order/{0}".format(order_id)
+            endpoint = f"/certificate/download/order/{order_id}"
         else:
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                "No certificate id or order id specified"
-            )
+            return action_result.set_status(phantom.APP_ERROR, "No certificate id or order id specified")
 
-        url = "{0}/{1}".format(self._base_url, endpoint.strip("/"))
+        url = "{}/{}".format(self._base_url, endpoint.strip("/"))
         self.debug_print("Making rest call...")
         response = self._request_session.get(url, stream=True)
 
@@ -375,14 +333,16 @@ class DigiCertConnector(BaseConnector):
         if not vault_info["succeeded"]:
             return action_result.set_status(phantom.APP_ERROR, vault_info["message"])
 
-        action_result.update_summary({
-            "vault_id": vault_info["vault_id"],
-        })
+        action_result.update_summary(
+            {
+                "vault_id": vault_info["vault_id"],
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_get_request_info(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -391,7 +351,7 @@ class DigiCertConnector(BaseConnector):
 
         # submit the request
         ret_val, response = self._make_rest_call(
-            "/order/certificate/{0}".format(order_id),
+            f"/order/certificate/{order_id}",
             action_result,
         )
 
@@ -403,22 +363,23 @@ class DigiCertConnector(BaseConnector):
         action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        action_result.update_summary({
-            "order_id": response["id"],
-            "order_status": response["status"],
-            "common_name": response["certificate"]["common_name"],
-        })
+        action_result.update_summary(
+            {
+                "order_id": response["id"],
+                "order_status": response["status"],
+                "common_name": response["certificate"]["common_name"],
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def handle_action(self, param):
-
         ret_val = phantom.APP_SUCCESS
 
         # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
 
-        self.debug_print("In digicert handle action. Action ID: {}".format(action_id))
+        self.debug_print(f"In digicert handle action. Action ID: {action_id}")
 
         self.debug_print("action_id", action_id)
 
@@ -454,24 +415,18 @@ class DigiCertConnector(BaseConnector):
         # Initialize the requests session that will be used for rest requests
         self._request_session = requests.Session()
         self._request_session.verify = config.get("verify_server_cert", True)
-        self._request_session.headers.update({
-            "X-DC-DEVKEY": self._api_key
-        })
+        self._request_session.headers.update({"X-DC-DEVKEY": self._api_key})
 
         # Set proxy vars for the session if they are in the environment
         self._request_session.proxies = {}
-        env_vars = config.get('_reserved_environment_variables', {})
-        if 'HTTP_PROXY' in env_vars:
-            self._request_session.proxies['http'] = env_vars['HTTP_PROXY']['value']
-        if 'HTTPS_PROXY' in env_vars:
-            self._request_session.proxies['https'] = env_vars['HTTPS_PROXY']['value']
+        env_vars = config.get("_reserved_environment_variables", {})
+        if "HTTP_PROXY" in env_vars:
+            self._request_session.proxies["http"] = env_vars["HTTP_PROXY"]["value"]
+        if "HTTPS_PROXY" in env_vars:
+            self._request_session.proxies["https"] = env_vars["HTTPS_PROXY"]["value"]
 
         # Use the retry adapter to retry requests based on certain status codes
-        retry = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[408, 429, 500, 502, 503, 504]
-        )
+        retry = Retry(total=3, backoff_factor=1, status_forcelist=[408, 429, 500, 502, 503, 504])
         retry_adapter = HTTPAdapter(max_retries=retry)
         self._request_session.mount("http://", retry_adapter)
         self._request_session.mount("https://", retry_adapter)
@@ -487,7 +442,6 @@ class DigiCertConnector(BaseConnector):
 
 
 if __name__ == "__main__":
-
     import argparse
 
     import pudb
@@ -499,7 +453,7 @@ if __name__ == "__main__":
     argparser.add_argument("input_test_json", help="Input Test JSON file")
     argparser.add_argument("-u", "--username", help="username", required=False)
     argparser.add_argument("-p", "--password", help="password", required=False)
-    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
+    argparser.add_argument("-v", "--verify", action="store_true", help="verify", required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
@@ -508,13 +462,13 @@ if __name__ == "__main__":
     password = args.password
     verify = args.verify
 
-    if (username is not None and password is None):
-
+    if username is not None and password is None:
         # User specified a username but not a password, so ask
         import getpass
+
         password = getpass.getpass("Password: ")
 
-    if (username and password):
+    if username and password:
         login_url = BaseConnector._get_phantom_base_url() + "login"
         try:
             print("Accessing the Login page")
@@ -545,7 +499,7 @@ if __name__ == "__main__":
         connector = DigiCertConnector()
         connector.print_progress_message = True
 
-        if (session_id is not None):
+        if session_id is not None:
             in_json["user_session_token"] = session_id
             connector._set_csrf_info(csrftoken, headers["Referer"])
 
