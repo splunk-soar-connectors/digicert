@@ -1,6 +1,6 @@
 # File: digicert_consts.py
 #
-# Copyright (c) 2021-2022 Splunk Inc.
+# Copyright (c) 2021-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,5 +59,5 @@ PLATFORM_MAP = {
     "Tomcat": 24,
     "WebStar": 26,
     "Zeus Web Server": 28,
-    "Other": -1
+    "Other": -1,
 }
