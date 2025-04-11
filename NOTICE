@@ -1,16 +1,17 @@
-Splunk SOAR DigiCert
-Copyright (c) 2021-2022 Splunk Inc.
+Splunk SOAR App: DigiCert
+Copyright (c) 2021-2025 Splunk Inc.
+Third Party Software Attributions:
 
-Third-party Software Attributions:
+@@@@============================================================================
 
-Library: beautifulsoup4
-Version: 4.9.1
-License: MIT
-Copyright 2004-2017 Leonard Richardson
-Copyright 2004-2019 Leonard Richardson
-Copyright 2018 Isaac Muse
+Library: cryptography - 3.3.2
+Homepage: https://github.com/pyca/cryptography
+License: Apache Software License; BSD License
+License Text:
 
-Library: requests
-Version: 2.25.0
-License: Apache 2.0
-Kenneth Reitz
+This software is made available under the terms of *either* of the licenses
+found in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made
+under the terms of *both* these licenses.
+
+The code used in the OS random engine is derived from CPython, and is licensed
+under the terms of the PSF License Agreement.
