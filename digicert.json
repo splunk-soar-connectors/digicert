@@ -8,7 +8,7 @@
     "logo": "digicert.svg",
     "logo_dark": "digicert_dark.svg",
     "product_version_regex": ".*",
-    "python_version": "3",
+    "python_version": ["3.9", "3.13"],
     "publisher": "Splunk Community",
     "contributors": [
         {
