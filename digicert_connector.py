@@ -17,6 +17,7 @@
 # Phantom App imports
 import json
 import sys
+from urllib.parse import quote
 
 import phantom.app as phantom
 import phantom.rules as ph_rules
@@ -277,13 +278,14 @@ class DigiCertConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         request_id = param["request_id"]
+        encoded_request_id = quote(str(request_id), safe="")
         status = param["status"]
 
         processor_comment = param.get("comment", "")
 
         # make rest call, response should be empty
         ret_val, response = self._make_rest_call(
-            f"/request/{request_id}/status", action_result, method="put", json={"status": status, "processor_comment": processor_comment}
+            f"/request/{encoded_request_id}/status", action_result, method="put", json={"status": status, "processor_comment": processor_comment}
         )
 
         if phantom.is_fail(ret_val):
@@ -313,9 +315,9 @@ class DigiCertConnector(BaseConnector):
         order_id = param.get("order_id")
 
         if certificate_id:
-            endpoint = f"/certificate/{certificate_id}/download/platform"
+            endpoint = f"/certificate/{quote(str(certificate_id), safe='')}/download/platform"
         elif order_id:
-            endpoint = f"/certificate/download/order/{order_id}"
+            endpoint = f"/certificate/download/order/{quote(str(order_id), safe='')}"
         else:
             return action_result.set_status(phantom.APP_ERROR, "No certificate id or order id specified")
 
@@ -348,10 +350,11 @@ class DigiCertConnector(BaseConnector):
 
         # required params
         order_id = param["order_id"]
+        encoded_order_id = quote(str(order_id), safe="")
 
         # submit the request
         ret_val, response = self._make_rest_call(
-            f"/order/certificate/{order_id}",
+            f"/order/certificate/{encoded_order_id}",
             action_result,
         )
 
