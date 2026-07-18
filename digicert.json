@@ -8,7 +8,7 @@
     "logo": "digicert.svg",
     "logo_dark": "digicert_dark.svg",
     "product_version_regex": ".*",
-    "python_version": "3",
+    "python_version": "3.9, 3.13",
     "publisher": "Splunk Community",
     "contributors": [
         {
@@ -18,7 +18,7 @@
             "name": "Alex Baker"
         }
     ],
-    "license": "Copyright (c) 2021-2025 Splunk Inc.",
+    "license": "Copyright (c) 2021-2026 Splunk Inc.",
     "app_version": "1.0.3",
     "utctime_updated": "2025-04-28T20:13:35.868188Z",
     "package_name": "phantom_digicert",
@@ -843,15 +843,19 @@
         "wheel": [
             {
                 "module": "cffi",
-                "input_file": "wheels/py39/cffi-1.17.1-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+                "input_file": "wheels/py39/cffi-2.0.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "cryptography",
-                "input_file": "wheels/py36/cryptography-3.3.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl"
+                "input_file": "wheels/py39/cryptography-44.0.3-cp39-abi3-manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "pycparser",
-                "input_file": "wheels/py3/pycparser-2.22-py3-none-any.whl"
+                "input_file": "wheels/py3/pycparser-2.23-py3-none-any.whl"
+            },
+            {
+                "module": "typing_extensions",
+                "input_file": "wheels/py3/typing_extensions-4.16.0-py3-none-any.whl"
             }
         ]
     },
@@ -859,15 +863,19 @@
         "wheel": [
             {
                 "module": "cffi",
-                "input_file": "wheels/py313/cffi-1.17.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+                "input_file": "wheels/py313/cffi-2.1.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "cryptography",
-                "input_file": "wheels/py36/cryptography-3.3.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl"
+                "input_file": "wheels/py39/cryptography-44.0.3-cp39-abi3-manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "pycparser",
-                "input_file": "wheels/py3/pycparser-2.22-py3-none-any.whl"
+                "input_file": "wheels/py3/pycparser-3.0-py3-none-any.whl"
+            },
+            {
+                "module": "typing_extensions",
+                "input_file": "wheels/py3/typing_extensions-4.16.0-py3-none-any.whl"
             }
         ]
     }
