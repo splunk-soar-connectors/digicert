@@ -1,9 +1,9 @@
 # DigiCert
 
-Publisher: Splunk Community \
-Connector Version: 1.0.3 \
-Product Vendor: DigiCert \
-Product Name: DigiCert Services API \
+Publisher: Splunk Community <br>
+Connector Version: 1.0.3 <br>
+Product Vendor: DigiCert <br>
+Product Name: DigiCert Services API <br>
 Minimum Product Version: 5.1.0
 
 This app uses the DigiCert automation API to manage ssl certificates
@@ -21,17 +21,17 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[request cert](#action-request-cert) - Order a new SSL certificate \
-[update request status](#action-update-request-status) - Update the status of a request (i.e. approve the request) \
-[download cert](#action-download-cert) - Download a certificate to the vault \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[request cert](#action-request-cert) - Order a new SSL certificate <br>
+[update request status](#action-update-request-status) - Update the status of a request (i.e. approve the request) <br>
+[download cert](#action-download-cert) - Download a certificate to the vault <br>
 [get request info](#action-get-request-info) - Get details for a certificate request
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -46,7 +46,7 @@ No Output
 
 Order a new SSL certificate
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Order a new SSL certificate. By default, some parameters are extracted from the csr, but can be overriden if needed.
@@ -90,7 +90,7 @@ summary.total_objects_successful | numeric | | |
 
 Update the status of a request (i.e. approve the request)
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Approve or reject a certificate request (requires proper permissions).
@@ -123,7 +123,7 @@ summary.total_objects_successful | numeric | | |
 
 Download a certificate to the vault
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **True**
 
 Download certificate and save it to the vault.
@@ -152,7 +152,7 @@ summary.total_objects_successful | numeric | | |
 
 Get details for a certificate request
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -249,7 +249,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
