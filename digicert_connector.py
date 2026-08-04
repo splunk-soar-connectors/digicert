@@ -16,8 +16,9 @@
 #
 # Phantom App imports
 import json
+import re
 import sys
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 import phantom.app as phantom
 import phantom.rules as ph_rules
@@ -50,6 +51,21 @@ class DigiCertConnector(BaseConnector):
         self._api_key = None
         self._org_id = None
         self._request_session = None
+
+    @staticmethod
+    def _build_id_endpoint(identifier, identifier_name, *path_parts):
+        """Build a canonical CertCentral resource path around one decimal ID."""
+        if not isinstance(identifier, str) or re.fullmatch(r"[0-9]+", identifier) is None:
+            raise ValueError(f"Please provide a valid DigiCert {identifier_name}")
+
+        encoded_identifier = quote(identifier, safe="")
+        endpoint_parts = [encoded_identifier if part is None else part for part in path_parts]
+        endpoint = "/" + "/".join(endpoint_parts)
+        parsed_endpoint = urlsplit(endpoint)
+        if parsed_endpoint.path != endpoint or parsed_endpoint.query or parsed_endpoint.fragment:
+            raise ValueError(f"Please provide a valid DigiCert {identifier_name}")
+
+        return endpoint
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
@@ -278,14 +294,18 @@ class DigiCertConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         request_id = param["request_id"]
-        encoded_request_id = quote(str(request_id), safe="")
         status = param["status"]
+
+        try:
+            endpoint = self._build_id_endpoint(request_id, "request ID", "request", None, "status")
+        except ValueError as error:
+            return action_result.set_status(phantom.APP_ERROR, str(error))
 
         processor_comment = param.get("comment", "")
 
         # make rest call, response should be empty
         ret_val, response = self._make_rest_call(
-            f"/request/{encoded_request_id}/status", action_result, method="put", json={"status": status, "processor_comment": processor_comment}
+            endpoint, action_result, method="put", json={"status": status, "processor_comment": processor_comment}
         )
 
         if phantom.is_fail(ret_val):
@@ -314,12 +334,15 @@ class DigiCertConnector(BaseConnector):
         certificate_id = param.get("certificate_id")
         order_id = param.get("order_id")
 
-        if certificate_id:
-            endpoint = f"/certificate/{quote(str(certificate_id), safe='')}/download/platform"
-        elif order_id:
-            endpoint = f"/certificate/download/order/{quote(str(order_id), safe='')}"
-        else:
-            return action_result.set_status(phantom.APP_ERROR, "No certificate id or order id specified")
+        try:
+            if certificate_id:
+                endpoint = self._build_id_endpoint(certificate_id, "certificate ID", "certificate", None, "download", "platform")
+            elif order_id:
+                endpoint = self._build_id_endpoint(order_id, "order ID", "certificate", "download", "order", None)
+            else:
+                return action_result.set_status(phantom.APP_ERROR, "No certificate id or order id specified")
+        except ValueError as error:
+            return action_result.set_status(phantom.APP_ERROR, str(error))
 
         url = "{}/{}".format(self._base_url, endpoint.strip("/"))
         self.debug_print("Making rest call...")
@@ -350,11 +373,14 @@ class DigiCertConnector(BaseConnector):
 
         # required params
         order_id = param["order_id"]
-        encoded_order_id = quote(str(order_id), safe="")
+        try:
+            endpoint = self._build_id_endpoint(order_id, "order ID", "order", "certificate", None)
+        except ValueError as error:
+            return action_result.set_status(phantom.APP_ERROR, str(error))
 
         # submit the request
         ret_val, response = self._make_rest_call(
-            f"/order/certificate/{encoded_order_id}",
+            endpoint,
             action_result,
         )
 
