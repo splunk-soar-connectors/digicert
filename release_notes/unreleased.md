@@ -1,3 +1,1 @@
 **Unreleased**
-
-* Restricted CertCentral resource paths to decimal order, certificate, and request IDs

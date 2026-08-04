@@ -1,7 +1,7 @@
 # DigiCert
 
 Publisher: Splunk Community <br>
-Connector Version: 1.0.4 <br>
+Connector Version: 1.0.5 <br>
 Product Vendor: DigiCert <br>
 Product Name: DigiCert Services API <br>
 Minimum Product Version: 5.1.0
